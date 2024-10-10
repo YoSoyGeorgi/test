@@ -101,8 +101,8 @@ class PDFService:
                     mensaje='Success',
                     data={
                         'documentStatus': 'Documento validado',
-                        'details': 'Validación exitosa, el documento está actualizado.',
-                        'documentData': sat
+                        'details': 'Validación exitosa, se muestran los datos más actualizados obtenidos del SAT',
+                        'currentUserData': sat
                     }
                 )
             )
