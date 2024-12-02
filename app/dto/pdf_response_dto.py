@@ -22,10 +22,10 @@ class SuccessResponse(BaseModel):
     data: Dict[str, Any]
 
 class PDFResponseDTO(BaseModel):
-    error_response: Optional[ErrorResponse] = None
-    mismatch_response: Optional[MismatchResponse] = None
-    ocr_only_response: Optional[OCROnlyResponse] = None
-    success_response: Optional[SuccessResponse] = None
+    errorResponse: Optional[ErrorResponse] = None
+    mismatchResponse: Optional[MismatchResponse] = None
+    ocrOnlyResponse: Optional[OCROnlyResponse] = None
+    successResponse: Optional[SuccessResponse] = None
 
 class Config:
     # Excluir campos con valor None en la respuesta JSON
