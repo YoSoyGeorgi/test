@@ -50,7 +50,7 @@ class PDFService:
             # Validar si el documento es legible y no se pudo obtener información del documento
             if check == "Image is too blurred" and sat == None and document == None:
                 return PDFResponseDTO(
-                    error_response=ErrorResponse(
+                    errorResponse=ErrorResponse(
                         status=422,
                         mensaje='El documento no es legible, por favor sube un documento con mejor calidad e intenta nuevamente'
                     )
@@ -59,7 +59,7 @@ class PDFService:
             # Validar el mismatch (cuando la información del documento no coincide con la del SAT)
             if check == "SAT<>DOC":
                 return PDFResponseDTO(
-                    mismatch_response=MismatchResponse(
+                    mismatchResponse=MismatchResponse(
                         status=202,
                         mensaje='Mismatch',
                         data={
@@ -73,7 +73,7 @@ class PDFService:
             
             if check == 'QR code not detected' and sat == None and document == None:
                 return PDFResponseDTO(
-                    error_response=ErrorResponse(
+                    errorResponse=ErrorResponse(
                         status=409,
                         error='Conflict',
                         mensaje='El documento no coincide con los valores de referencia, sube un documento que cumpla con los valores y por favor intenta nuevamente'
@@ -83,7 +83,7 @@ class PDFService:
             # Si el scraping del SAT no es exitoso, pero el OCR es válido
             if check == 'SAT no accesible' and sat == None:
                 return PDFResponseDTO(
-                    ocr_only_response=OCROnlyResponse(
+                    ocrOnlyResponse=OCROnlyResponse(
                         status=201,
                         mensaje='OCR Only',
                         data={
@@ -96,13 +96,14 @@ class PDFService:
 
             # Si todo es exitoso, devolver los resultados correctos
             return PDFResponseDTO(
-                success_response=SuccessResponse(
+                successResponse=SuccessResponse(
                     status=200,
                     mensaje='Success',
                     data={
                         'documentStatus': 'Documento validado',
-                        'details': 'Validación exitosa, se muestran los datos más actualizados obtenidos del SAT',
-                        'currentUserData': sat
+                        'details': 'Validación exitosa, el CIF y el RFC concuerdan en el documento y en la página del SAT.',
+                        'webScrapingData': sat,
+                        'documentData': document
                     }
                 )
             )
@@ -110,7 +111,7 @@ class PDFService:
         except ValueError as ve:
         # Capturar errores de valor específico
             return PDFResponseDTO(
-                error_response=ErrorResponse(
+                errorResponse=ErrorResponse(
                     status=400,
                     error='Bad request',
                     mensaje=str(ve)
@@ -120,7 +121,7 @@ class PDFService:
         except UnboundLocalError as ule:
             # Capturar específicamente el UnboundLocalError
             return PDFResponseDTO(
-                error_response=ErrorResponse(
+                errorResponse=ErrorResponse(
                     status=400,
                     error='Bad request',
                     mensaje='Extensión del archivo inválida. Verifica tu archivo e intenta nuevamente'
@@ -129,7 +130,7 @@ class PDFService:
         except Exception as e:
             # Capturar cualquier otra excepción
             return PDFResponseDTO(
-                error_response=ErrorResponse(
+                errorResponse=ErrorResponse(
                     status=500,
                     error='Internal Server Error',
                     mensaje=f'Error inesperado: {str(e)}'
