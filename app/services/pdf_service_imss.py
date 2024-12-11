@@ -60,8 +60,9 @@ class PDFServiceIMSS:
                 return PDFResponseDTO(
                     errorResponse=ErrorResponse(
                         status=422,
+                        type="IMAGE_IS_TO_BLURRED",
                         error="Image is too blurred",
-                        mensaje='El documento no es legible, por favor sube un documento con mejor calidad e intenta nuevamente'
+                        message='The document is not legible, please upload a better quality document and try again.'
                     )
                 )
             
@@ -71,8 +72,9 @@ class PDFServiceIMSS:
                 return PDFResponseDTO(
                     errorResponse=ErrorResponse(
                         status=401,
-                        error="Extensión del archivo inválida",
-                        mensaje='Extensión del archivo inválida. Verifica tu archivo e intenta nuevamente'
+                        type="INVALID_FILE_EXTENSION",
+                        error="Unsupported file type",
+                        message='Invalid file extension. Please check your file and try again.'
                     )
                 )
             
@@ -81,8 +83,9 @@ class PDFServiceIMSS:
                 return PDFResponseDTO(
                     errorResponse=ErrorResponse(
                         status=402,
-                        error="No se pudo validar el NSS",
-                        mensaje='Se analizó el documento pero este no contiene un Número de Seguridad Social, intente nuevamente con otro archivo'
+                        type="NSS_COULD_NOT_BE_VALIDATED",
+                        error="The NSS could not be validated",
+                        message='The document was scanned but does not contain a Social Security Number, please try again with another file'
                     )
                 )
 
@@ -92,10 +95,11 @@ class PDFServiceIMSS:
                 return PDFResponseDTO(
                     successResponse=SuccessResponse(
                         status=200,
-                        mensaje='Success',
+                        type="SUCCESS",
+                        message='Success',
                         data={
-                            'documentStatus': 'Documento validado',
-                            'details': 'El documento cuenta con un Número de Seguridad Social',
+                            'documentStatus': 'Validated document',
+                            'details': 'The document has a Social Security Number',
                             'NSS': numSS
                         }
                     )
@@ -107,24 +111,27 @@ class PDFServiceIMSS:
                 return PDFResponseDTO(
                     errorResponse=ErrorResponse(
                         status=403,
-                        error="Acceso denegado",
-                        mensaje="No se pudo acceder al archivo. Verifica que el enlace sea válido y tenga permisos de acceso."
+                        type="ACCESS_DENIED",
+                        error="Access denied",
+                        message="The file could not be accessed. Please verify that the link is valid and has access permissions."
                     )
                 )
             elif "404" in str(e):
                 return PDFResponseDTO(
                     errorResponse=ErrorResponse(
                         status=404,
-                        error="Archivo no encontrado",
-                        mensaje="El archivo no existe. Verifica la URL proporcionada."
+                        type="FILE_NOT_FOUND",
+                        error="File not found",
+                        message="The file does not exist. Please check the URL provided."
                     )
                 )
             else:
                 return PDFResponseDTO(
                     errorResponse=ErrorResponse(
                         status=500,
+                        type="BAD_REQUEST",
                         error="Internal Server Error",
-                        mensaje=f"Error inesperado: {str(e)}"
+                        message=f"Error inesperado: {str(e)}"
                     )
                 )
 
@@ -134,8 +141,9 @@ class PDFServiceIMSS:
             return PDFResponseDTO(
                 errorResponse=ErrorResponse(
                     status=500,
+                    type="BAD_REQUEST",
                     error='Internal Server Error',
-                    mensaje=f'Error inesperado: {str(e)}'
+                    message=f'Error inesperado: {str(e)}'
                 )
             )
 
