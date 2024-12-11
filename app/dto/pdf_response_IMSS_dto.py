@@ -3,12 +3,14 @@ from typing import Optional, Dict, Any
 
 class ErrorResponse(BaseModel):
     status: int
+    type: str
     error: str
-    mensaje: str
+    message: str
 
 class SuccessResponse(BaseModel):
     status: int
-    mensaje: str
+    type: str
+    message: str
     data: Dict[str, Any]
 
 class PDFResponseDTO(BaseModel):
