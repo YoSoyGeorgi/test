@@ -53,7 +53,9 @@ class PDFService:
                 return PDFResponseDTO(
                     errorResponse=ErrorResponse(
                         status=422,
-                        mensaje='El documento no es legible, por favor sube un documento con mejor calidad e intenta nuevamente'
+                        type="IMAGE_IS_TO_BLURRED",
+                        error="Image is too blurred",
+                        message='The document is not legible, please upload a better quality document and try again.'
                     )
                 )
 
@@ -62,10 +64,11 @@ class PDFService:
                 return PDFResponseDTO(
                     mismatchResponse=MismatchResponse(
                         status=202,
-                        mensaje='Mismatch',
+                        type="MISMATCH",
+                        message='Mismatch',
                         data={
-                            'documentStatus': 'El documento no coincide con el SAT',
-                            'details': 'La información extraída del documento y del SAT no coinciden en uno o más campos',
+                            'documentStatus': 'The document does not match the SAT',
+                            'details': 'The information extracted from the document and from the SAT do not match in one or more fields',
                             'webScrapingData': sat,
                             'documentData': document
                         }
@@ -76,8 +79,9 @@ class PDFService:
                 return PDFResponseDTO(
                     errorResponse=ErrorResponse(
                         status=409,
+                        type="CONFLICT",
                         error='Conflict',
-                        mensaje='El documento no coincide con los valores de referencia, sube un documento que cumpla con los valores y por favor intenta nuevamente'
+                        message='The document does not match the reference values, please upload a document that meets the values ​​and try again.'
                     )
                 )
 
@@ -86,10 +90,11 @@ class PDFService:
                 return PDFResponseDTO(
                     ocrOnlyResponse=OCROnlyResponse(
                         status=201,
-                        mensaje='OCR Only',
+                        type="OCR_ONLY",
+                        message='OCR Only',
                         data={
-                            'documentStatus': 'Validado sin el servicio del SAT',
-                            'details': 'El servicio de scraping ha fallado o se encuentra no disponible. Validación realizada con OCR',
+                            'documentStatus': 'Validated without SAT service',
+                            'details': 'The scraping service has failed or is unavailable. Validation performed with OCR',
                             'documentData': document
                         }
                     )
@@ -99,10 +104,11 @@ class PDFService:
             return PDFResponseDTO(
                 successResponse=SuccessResponse(
                     status=200,
-                    mensaje='Success',
+                    type="SUCCESS",
+                    message='Success',
                     data={
-                        'documentStatus': 'Documento validado',
-                        'details': 'Validación exitosa, el CIF y el RFC concuerdan en el documento y en la página del SAT.',
+                        'documentStatus': 'Validated document',
+                        'details': 'Successful validation, the CIF and RFC match in the document and on the SAT page.',
                         'webScrapingData': sat,
                         'documentData': document
                     }
@@ -114,8 +120,9 @@ class PDFService:
             return PDFResponseDTO(
                 errorResponse=ErrorResponse(
                     status=400,
+                    type="BAD_REQUEST",
                     error='Bad request',
-                    mensaje=str(ve)
+                    message=str(ve)
                 )
             )
         
@@ -124,8 +131,9 @@ class PDFService:
             return PDFResponseDTO(
                 errorResponse=ErrorResponse(
                     status=400,
+                    type="BAD_REQUEST",
                     error='Bad request',
-                    mensaje='Extensión del archivo inválida. Verifica tu archivo e intenta nuevamente'
+                    message='Invalid file extension. Please check your file and try again.'
                 )
             )
         
@@ -134,16 +142,18 @@ class PDFService:
                 return PDFResponseDTO(
                     errorResponse=ErrorResponse(
                         status=403,
-                        error="Acceso denegado",
-                        mensaje="No se pudo acceder al archivo. Verifica que el enlace sea válido y tenga permisos de acceso."
+                        type="ACCESS_DENIED",
+                        error="Access denied",
+                        message="The file could not be accessed. Please verify that the link is valid and has access permissions."
                     )
                 )
             elif "404" in str(e):
                 return PDFResponseDTO(
                     errorResponse=ErrorResponse(
                         status=404,
-                        error="Archivo no encontrado",
-                        mensaje="El archivo no existe. Verifica la URL proporcionada."
+                        type="FILE_NOT_FOUND",
+                        error="File not found",
+                        message="The file does not exist. Please check the URL provided."
                     )
                 )
 
@@ -152,8 +162,9 @@ class PDFService:
             return PDFResponseDTO(
                 errorResponse=ErrorResponse(
                     status=500,
+                    type="BAD_REQUEST",
                     error='Internal Server Error',
-                    mensaje=f'Error inesperado: {str(e)}'
+                    message=f'Error inesperado: {str(e)}'
                 )
             )
 
