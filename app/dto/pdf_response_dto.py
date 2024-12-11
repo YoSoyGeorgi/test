@@ -3,22 +3,26 @@ from typing import Optional, Dict, Any
 
 class ErrorResponse(BaseModel):
     status: int
+    type: str
     error: str
-    mensaje: str
+    message: str
 
 class MismatchResponse(BaseModel):
     status: int
-    mensaje: str
+    type: str
+    message: str
     data: Dict[str, Any]
 
 class OCROnlyResponse(BaseModel):
     status: int
-    mensaje: str
+    type: str
+    message: str
     data: Dict[str, Any]
 
 class SuccessResponse(BaseModel):
     status: int
-    mensaje: str
+    type: str
+    message: str
     data: Dict[str, Any]
 
 class PDFResponseDTO(BaseModel):
