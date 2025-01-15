@@ -478,7 +478,7 @@ def sora(file_path, api_key):
             else:
                 parse_sat = parse_sat_data(ai_text_dict_final["CIF"],ai_text_dict_final["RFC"],satscrapp)
                 try:
-                    ai_text = open_ai(text_for_ai(bbox, img_cv), API_SORA)
+                    ai_text = open_ai(text_for_ai(bbox, img_cv), api_key)
                     ai_text_dict_json = json.loads(ai_text)
                     ai_text_dict_final.update(ai_text_dict_json)
                     curp =  ai_text_dict_final['curp']

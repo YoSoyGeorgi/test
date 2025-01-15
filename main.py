@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from app.dto.pdf_dto import URLRequest
-from app.dto.pdf_response_dto import PDFResponseDTO as ResponseSAT
-from app.dto.pdf_response_IMSS_dto import PDFResponseDTO as ResponseIMSS
+from app.dto.pdf_response_dto import PDFResponseDTO
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from app.services.pdf_service import PDFService
@@ -17,7 +16,7 @@ handler = Mangum(app)
 async def hello():
     return {"message":"Test"}
 
-@app.post("/get-sat", response_model=ResponseSAT)
+@app.post("/get-sat", response_model=PDFResponseDTO)
 async def get_pdf_text(request: URLRequest):
     try:
         # Llama al servicio para procesar el archivo
@@ -30,9 +29,9 @@ async def get_pdf_text(request: URLRequest):
         return JSONResponse(content=json_compatible_result)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
+        raise HTTPException(statusCode=500, detail=f"Error processing PDF: {str(e)}")
 
-@app.post("/get-imss", response_model=ResponseIMSS)
+@app.post("/get-imss", response_model=PDFResponseDTO)
 async def get_pdf_text(request: URLRequest):
     try:
         # Llama al servicio para procesar el archivo
