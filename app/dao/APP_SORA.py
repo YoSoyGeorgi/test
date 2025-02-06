@@ -107,7 +107,7 @@ def parse_pdf_text(extracted_text):
         "primerApellido": r"PrimerApellido:\s*(.*?)(?=\nSegundo)",
         "segundoApellido": r"Segundo Apellido:\s*(.*?)(?=\nFecha)",
         "codigoPostal": r"CódigoPostal:\s*(\d+)",
-        "tipoVialidad": r"TipodeVialidad:\s*(.*?)(?=\nNombre)",
+        "tipoVialidad": r"TipodeVialidad:\s*(.*?)(?=\nNombredeVialidad)",
         "nombreVialidad": r"NombredeVialidad:\s*(.*?)(?=\nNúmero)",
         "numeroExterior": r"NúmeroExterior:\s*(.*?)(?=\nNúmero)",
         "numeroInterior": r"NúmeroInterior:*(.*?)(?=Nombre)",
