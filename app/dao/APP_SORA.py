@@ -93,51 +93,47 @@ def check_output(extracted_text):
         return "Texto inválido"
 
 def parse_pdf_text(extracted_text):
-    """Extrae información específica del texto del PDF usando expresiones regulares."""
-    # Define patrones regex para los campos
     patterns = {
         "CIF": r"idCIF:\s*(\d+)",
         "RFC": r"RFC:\s*([A-Z0-9]+)",
         "fechaInicioDeOperaciones": r"Fechainiciodeoperaciones:\s*(.*?)(?=\n)",
         "fechaDeUltimoCambioDeEstado": r"Fechadeúltimocambiodeestado:\s*(.*?)(?=\n)",
-        "nombreComercial":r"NombreComercial:\s*(.*?)(?=\n)",
-        "estatusEnElPadron":r"Estatusenelpadrón:\s*([A-Z\s]+)(?=\n)",
+        "nombreComercial": r"NombreComercial:\s*(.*?)(?=\n)",
+        "estatusEnElPadron": r"Estatusenelpadrón:\s*([A-Z\s]+)(?=\n)",
         "curp": r"CURP:\s*([A-Z0-9]+)",
         "nombre": r"Nombre\(s\):\s*(.*?)(?=\nPrimer)",
         "primerApellido": r"PrimerApellido:\s*(.*?)(?=\nSegundo)",
         "segundoApellido": r"Segundo Apellido:\s*(.*?)(?=\nFecha)",
         "codigoPostal": r"CódigoPostal:\s*(\d+)",
         "tipoVialidad": r"TipodeVialidad:\s*(.*?)(?=\nNombredeVialidad)",
-        "nombreVialidad": r"NombredeVialidad:\s*(.*?)(?=\nNúmero)",
-        "numeroExterior": r"NúmeroExterior:\s*(.*?)(?=\nNúmero)",
-        "numeroInterior": r"NúmeroInterior:*(.*?)(?=Nombre)",
+        # Actualizamos nombreVialidad para detenerse antes de "NúmeroExterior:"
+        "nombreVialidad": r"NombredeVialidad:\s*(.*?)(?=\s*NúmeroExterior:|$)",
+        "numeroExterior": r"NúmeroExterior:\s*(.*?)(?=\n|$)",
+        "numeroInterior": r"NúmeroInterior:\s*(.*?)(?=Nombre)",
         "nombreColonia": r"NombredelaColonia:\s*(.*?)(?=\nNombre)",
-        "nombreLocalidad": r"NombredelaLocalidad:\s*([A-Z\s]+)(?=\n|Nombre)",
-        "nombreMunicipio": r"NombredelMunicipio oDemarcación Territorial:\s*(.*?)(?=\nNombre)",
+        "nombreLocalidad": r"NombredelaLocalidad:\s*(.*?)\s*(?=Nombre\s*delMunicipio oDemarcación Territorial:|NombredelaEntidadFederativa:|CódigoPostal:|$)",
+        "nombreMunicipio": r"Nombre\s*delMunicipio oDemarcación Territorial:\s*(.*?)\s*(?=NombredelaEntidadFederativa:|EntreCalle:|$)",
         "nombredelaEntidadFederativa": r"NombredelaEntidadFederativa:\s*(.*?)(?=EntreCalle)"
     }
-    # Extract the data using the regex patterns
+    
     extracted_data = {}
     for key, pattern in patterns.items():
         match = re.search(pattern, extracted_text, re.DOTALL)
         extracted_data[key] = match.group(1).strip() if match else ""
-    # Fix the issue where numeroInterior is 'N' (assumed missing value)
+    
+    # Ajustes adicionales
     if extracted_data["nombreComercial"] == 'Datos del domicilio registrado':
         extracted_data["nombreComercial"] = ""
     if extracted_data["numeroInterior"] == 'N':
         extracted_data["numeroInterior"] = ""
-    # Remove any residual newline characters and extra spaces
+    
     for key in extracted_data:
         extracted_data[key] = ' '.join(extracted_data[key].split())
-    # Add space in numeroExterior if needed
-    if re.match(r'\d+[A-Z]+', extracted_data["numeroExterior"]):
-        extracted_data["numeroExterior"] = re.sub(r'(\d+)([A-Z]+)', r'\1 \2', extracted_data["numeroExterior"])
-    # Ensure nombreVialidad doesn't contain NúmeroExterior
-    extracted_data["nombreVialidad"] = re.sub(r'\s*NúmeroExterior:.*$', '', extracted_data["nombreVialidad"])
-    # Fix NombreLocalidad to not include NombreMunicipio information
-    # nombre_localidad_match = re.search(r"NombredelaLocalidad:\s*(.*?)\s*(?=\nNombredel)", extracted_text, re.DOTALL)
-    # if nombre_localidad_match:
-    #     extracted_data["NombreLocalidad"] = nombre_localidad_match.group(1).strip()
+    
+    # Si nombreLocalidad queda vacío, se asigna nombreMunicipio
+    if not extracted_data["nombreLocalidad"].strip():
+        extracted_data["nombreLocalidad"] = extracted_data["nombreMunicipio"]
+    
     return extracted_data
 
 class SSLAdapter(HTTPAdapter):
@@ -198,7 +194,7 @@ def parse_sat_data(idCIF, RFC, scrapdata):
                 if 'CURP' in key:
                     result['curp'] = value
                 elif 'Nombre' in key and 'Comercial' not in key and 'vialidad' not in key:
-                    if result['nombre'] == '':  # First 'nombre' is the person’s name
+                    if result['nombre'] == '':  # First 'nombre' is the person's name
                         result['nombre'] = value
                 elif 'Apellido Paterno' in key:
                     result['primerApellido'] = value
